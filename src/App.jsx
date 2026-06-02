@@ -21,7 +21,12 @@ function App() {
   return (
     <div className="app-container" style={{ display: 'flex', flexDirection: 'column', height: '100dvh' }}>
       {/* Header */}
-      <header style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <header className="glass-panel" style={{ 
+        padding: 'max(15px, env(safe-area-inset-top)) 20px 15px 20px', 
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        borderRadius: '0', borderTop: 'none', borderLeft: 'none', borderRight: 'none',
+        zIndex: 1000, background: 'rgba(255, 255, 255, 0.75)'
+      }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <span style={{ fontSize: '24px', color: 'var(--gold-primary)' }}>ส</span>
           <h1 style={{ fontSize: '20px', fontWeight: '500' }}>Sattha</h1>

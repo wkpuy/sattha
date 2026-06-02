@@ -17,6 +17,14 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+::-webkit-scrollbar {
+  display: none;
 }
 
 body {
@@ -29,6 +37,14 @@ body {
   /* Add subtle texture or pattern if needed */
   display: flex;
   justify-content: center;
+  overscroll-behavior-y: none; /* Disable pull-to-refresh */
+  user-select: none; /* Prevent text selection */
+  -webkit-user-select: none;
+}
+
+input, textarea, select {
+  user-select: auto;
+  -webkit-user-select: auto;
 }
 
 #root {
