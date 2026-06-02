@@ -75,9 +75,17 @@ function weightedChoice(probsObj, rng = Math.random) {
 }
 
 export const generatePrediction = (mixRatio, birthDay, drawDate, faithSourcesStr, seedNumber) => {
-  let localSeed = simpleHash(drawDate + "-" + birthDay + "-" + mixRatio + "-" + (faithSourcesStr || "") + "-" + (seedNumber || ""));
-  const rng = () => {
-    let x = Math.sin(localSeed++) * 10000;
+  let mathSeedStr = drawDate + "-" + (seedNumber || "");
+  let mathSeed = simpleHash(mathSeedStr);
+  const rngMath = () => {
+    let x = Math.sin(mathSeed++) * 10000;
+    return x - Math.floor(x);
+  };
+
+  let faithSeedStr = drawDate + "-" + birthDay + "-" + (faithSourcesStr || "") + "-" + (seedNumber || "");
+  let faithSeed = simpleHash(faithSeedStr);
+  const rngFaith = () => {
+    let x = Math.sin(faithSeed++) * 10000;
     return x - Math.floor(x);
   };
 
@@ -91,25 +99,25 @@ export const generatePrediction = (mixRatio, birthDay, drawDate, faithSourcesStr
     let currentState = (seedNumber && seedNumber.length >= 2) ? seedNumber.slice(-2) : SEQUENTIAL_HISTORY[SEQUENTIAL_HISTORY.length - 1];
     if (!TRANSITION_MATRIX[currentState]) {
       const keys = Object.keys(TRANSITION_MATRIX);
-      currentState = keys[Math.floor(rng() * keys.length)];
+      currentState = keys[Math.floor(rngMath() * keys.length)];
     }
     
     for (let i = 0; i < numMath; i++) {
-      const is3Digit = rng() < 0.4;
+      const is3Digit = rngMath() < 0.4;
       const transitions = TRANSITION_MATRIX[currentState];
       
       let nextState;
       if (transitions) {
-        nextState = weightedChoice(transitions, rng);
+        nextState = weightedChoice(transitions, rngMath);
       } else {
-        nextState = Math.floor(rng() * 100).toString().padStart(2, '0');
+        nextState = Math.floor(rngMath() * 100).toString().padStart(2, '0');
       }
       
       currentState = nextState;
       
       let finalNum, descText;
       if (is3Digit) {
-        finalNum = Math.floor(rng() * 10).toString() + nextState;
+        finalNum = Math.floor(rngMath() * 10).toString() + nextState;
         descText = "วิเคราะห์สถิติ 3 ตัว ด้วย Markov Chain" + (seedNumber ? ` (ต่อยอดจาก ${seedNumber})` : "");
       } else {
         finalNum = nextState;
@@ -137,11 +145,11 @@ export const generatePrediction = (mixRatio, birthDay, drawDate, faithSourcesStr
     const unluckyDigit = unluckyMap[birthDay];
     
     for (let i = 0; i < numFaith; i++) {
-      let fNum = faithPool[Math.floor(rng() * faithPool.length)];
+      let fNum = faithPool[Math.floor(rngFaith() * faithPool.length)];
       if (unluckyDigit && fNum.includes(unluckyDigit)) {
         let found = false;
         for (let j = 0; j < 10; j++) {
-          let temp = faithPool[Math.floor(rng() * faithPool.length)];
+          let temp = faithPool[Math.floor(rngFaith() * faithPool.length)];
           if (!temp.includes(unluckyDigit)) {
             fNum = temp;
             found = true;
@@ -149,8 +157,8 @@ export const generatePrediction = (mixRatio, birthDay, drawDate, faithSourcesStr
           }
         }
         if (!found) {
-          const is3 = rng() < 0.4;
-          fNum = is3 ? Math.floor(rng() * 1000).toString().padStart(3, '0') : Math.floor(rng() * 100).toString().padStart(2, '0');
+          const is3 = rngFaith() < 0.4;
+          fNum = is3 ? Math.floor(rngFaith() * 1000).toString().padStart(3, '0') : Math.floor(rngFaith() * 100).toString().padStart(2, '0');
         }
       }
       const digitType = fNum.length > 2 ? "3 ตัว" : "2 ตัว";
@@ -162,7 +170,7 @@ export const generatePrediction = (mixRatio, birthDay, drawDate, faithSourcesStr
     }
   }
   
-  detailedResults.sort(() => rng() - 0.5);
+  detailedResults.sort(() => rngMath() - 0.5);
   let explanation = `ระบบประมวลผล ${totalNumbers} ชุดตัวเลข ตามสัดส่วนความเชื่อ ${mixRatio}% ทำให้ได้โควต้า: สายมู ${numFaith} ตัว และ สถิติ ${numMath} ตัว`;
   if (seedNumber) explanation += ` (มีการใช้เลขในใจ '${seedNumber}' ร่วมคำนวณในโมเดล Markov Chain)`;
   
