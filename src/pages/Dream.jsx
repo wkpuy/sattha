@@ -38,7 +38,8 @@ const Dream = () => {
     try {
       const query = encodeURIComponent(dreamText);
       const time = encodeURIComponent(dreamTime);
-      const url = `http://localhost:8000/api/dream_predict?query=${query}&birth_day=${birthDayIndex}&gender=${gender}&dream_time=${time}`;
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      const url = `${API_URL}/api/dream_predict?query=${query}&birth_day=${birthDayIndex}&gender=${gender}&dream_time=${time}`;
       
       const response = await fetch(url);
       if (response.ok) {
