@@ -16,12 +16,7 @@ function seededRandom(seed) {
   return x - Math.floor(x);
 }
 
-const SEQUENTIAL_HISTORY = [];
-let seed = 42;
-for (let i = 0; i < 2000; i++) {
-  let rnd = Math.floor(seededRandom(seed++) * 100);
-  SEQUENTIAL_HISTORY.push(rnd.toString().padStart(2, '0'));
-}
+import { SEQUENTIAL_HISTORY } from './historicalData';
 
 const buildTransitionMatrix = (history) => {
   const matrix = {};
@@ -57,7 +52,7 @@ export const getSystemStatus = (drawDate) => {
   const sources = getAvailableSources(drawDate);
   return {
     historical_records: SEQUENTIAL_HISTORY.length,
-    monte_carlo_iterations: "1,000,000",
+    monte_carlo_iterations: "10,000",
     active_faith_sources: sources.length,
     confidence_level: sources.length >= 4 ? 95 : (sources.length > 0 ? 80 : 50)
   };
