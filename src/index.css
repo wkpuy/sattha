@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg-color: #f8f9fa;
+  --text-primary: #2d3436;
+  --text-secondary: #636e72;
+  --gold-primary: #d4af37;
+  --gold-light: #f1c40f;
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --shadow-color: rgba(0, 0, 0, 0.05);
+  --accent-blue: #74b9ff;
+  --accent-orange: #fab1a0;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Prompt', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  /* Warm subtle gradient background */
+  background: linear-gradient(135deg, #fdfbfb 0%, #f3f4f6 100%);
+  min-height: 100vh;
+  /* Add subtle texture or pattern if needed */
+  display: flex;
+  justify-content: center;
+}
+
+#root {
+  width: 100%;
+  max-width: 480px; /* Mobile width */
+  min-height: 100vh;
+  background-color: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 0 20px rgba(0,0,0,0.05);
+  position: relative;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Glassmorphism Utility Class */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px 0 var(--shadow-color);
+  border-radius: 20px;
+}
+
+/* Primary CTA Button */
+.btn-primary {
+  padding: 15px 40px;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 25px;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold-primary));
+  color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.96);
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+}
+
+.btn-primary:disabled {
+  background: rgba(200, 200, 200, 0.5);
+  color: var(--text-secondary);
+  box-shadow: none;
+  cursor: wait;
+}
