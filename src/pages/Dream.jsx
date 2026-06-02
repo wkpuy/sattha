@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Moon, Sparkles, Clock, Search } from 'lucide-react';
+import { predictDream } from '../logic/predictionEngine';
 
 const Dream = () => {
   const [dreamText, setDreamText] = useState('');
@@ -36,21 +37,13 @@ const Dream = () => {
     }
 
     try {
-      const query = encodeURIComponent(dreamText);
-      const time = encodeURIComponent(dreamTime);
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const url = `${API_URL}/api/dream_predict?query=${query}&birth_day=${birthDayIndex}&gender=${gender}&dream_time=${time}`;
-      
-      const response = await fetch(url);
-      if (response.ok) {
-        const data = await response.json();
-        setResult(data);
-      } else {
-        alert('เกิดข้อผิดพลาดในการทำนายฝัน');
-      }
+      // Simulate network delay for UX
+      await new Promise(r => setTimeout(r, 800));
+      const data = predictDream(dreamText, birthDayIndex, gender, dreamTime);
+      setResult(data);
     } catch (error) {
       console.error(error);
-      alert('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
+      alert('เกิดข้อผิดพลาดในการประมวลผล');
     } finally {
       setIsCalculating(false);
     }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Info, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
 import MixerDial from '../components/MixerDial';
 import PredictionCard from '../components/PredictionCard';
+import { getAvailableSources, getSystemStatus, generatePrediction } from '../logic/predictionEngine';
 
 const Home = () => {
   const [mixRatio, setMixRatio] = useState(50); // 50 means 50/50
@@ -23,20 +24,16 @@ const Home = () => {
   const [seedNumber, setSeedNumber] = useState('');
   const [isSourcesExpanded, setIsSourcesExpanded] = useState(false);
   
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-  
   // ดึงข้อมูลเมื่อเปลี่ยนงวด
   useEffect(() => {
-    const fetchSources = async () => {
+    const fetchAllData = () => {
       try {
-        // Fetch faith sources
-        const res = await fetch(`${API_URL}/api/available_sources?draw_date=${drawDate}`);
-        const data = await res.json();
+        // Get faith sources from engine
+        const data = getAvailableSources(drawDate);
         setAvailableSources(data);
         
-        // Fetch system status
-        const statusRes = await fetch(`${API_URL}/api/system_status?draw_date=${drawDate}`);
-        const statusData = await statusRes.json();
+        // Get system status from engine
+        const statusData = getSystemStatus(drawDate);
         setSystemStatus(statusData);
         
         // Default ให้ติ๊กเลือกทั้งหมด
@@ -46,10 +43,10 @@ const Home = () => {
         });
         setSelectedSources(initialSelected);
       } catch (e) {
-        console.error("Failed to fetch data", e);
+        console.error("Failed to load engine data", e);
       }
     };
-    fetchSources();
+    fetchAllData();
   }, [drawDate]);
 
   const handleSourceChange = (id) => {
@@ -81,10 +78,9 @@ const Home = () => {
         console.warn("Could not parse user birth date", err);
       }
 
-      // ส่ง Request ไปยัง Python FastAPI Backend
+      // เรียกใช้งานผ่าน Engine โดยตรง
       const sourcesParam = Object.keys(selectedSources).filter(k => selectedSources[k]).join(',');
-      const response = await fetch(`${API_URL}/api/predict?mix_ratio=${mixRatio}&birth_day=${birthDay}&draw_date=${drawDate}&faith_sources=${sourcesParam}&seed_number=${seedNumber}`);
-      const data = await response.json();
+      const data = generatePrediction(mixRatio, birthDay, drawDate, sourcesParam, seedNumber);
       
       // หน่วงเวลาจำลองเล็กน้อยเพื่อความขลัง (Quantum Effect)
       setTimeout(() => {
