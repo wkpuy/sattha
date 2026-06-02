@@ -63,10 +63,10 @@ export const getSystemStatus = (drawDate) => {
   };
 };
 
-function weightedChoice(probsObj) {
+function weightedChoice(probsObj, rng = Math.random) {
   const choices = Object.keys(probsObj);
   const probs = Object.values(probsObj);
-  let r = Math.random();
+  let r = rng();
   for (let i = 0; i < choices.length; i++) {
     if (r < probs[i]) return choices[i];
     r -= probs[i];
@@ -75,6 +75,12 @@ function weightedChoice(probsObj) {
 }
 
 export const generatePrediction = (mixRatio, birthDay, drawDate, faithSourcesStr, seedNumber) => {
+  let localSeed = simpleHash(drawDate + "-" + birthDay + "-" + mixRatio + "-" + (faithSourcesStr || "") + "-" + (seedNumber || ""));
+  const rng = () => {
+    let x = Math.sin(localSeed++) * 10000;
+    return x - Math.floor(x);
+  };
+
   const totalNumbers = 5;
   const numFaith = Math.round((mixRatio / 100) * totalNumbers);
   const numMath = totalNumbers - numFaith;
@@ -85,25 +91,25 @@ export const generatePrediction = (mixRatio, birthDay, drawDate, faithSourcesStr
     let currentState = (seedNumber && seedNumber.length >= 2) ? seedNumber.slice(-2) : SEQUENTIAL_HISTORY[SEQUENTIAL_HISTORY.length - 1];
     if (!TRANSITION_MATRIX[currentState]) {
       const keys = Object.keys(TRANSITION_MATRIX);
-      currentState = keys[Math.floor(Math.random() * keys.length)];
+      currentState = keys[Math.floor(rng() * keys.length)];
     }
     
     for (let i = 0; i < numMath; i++) {
-      const is3Digit = Math.random() < 0.4;
+      const is3Digit = rng() < 0.4;
       const transitions = TRANSITION_MATRIX[currentState];
       
       let nextState;
       if (transitions) {
-        nextState = weightedChoice(transitions);
+        nextState = weightedChoice(transitions, rng);
       } else {
-        nextState = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+        nextState = Math.floor(rng() * 100).toString().padStart(2, '0');
       }
       
       currentState = nextState;
       
       let finalNum, descText;
       if (is3Digit) {
-        finalNum = Math.floor(Math.random() * 10).toString() + nextState;
+        finalNum = Math.floor(rng() * 10).toString() + nextState;
         descText = "วิเคราะห์สถิติ 3 ตัว ด้วย Markov Chain" + (seedNumber ? ` (ต่อยอดจาก ${seedNumber})` : "");
       } else {
         finalNum = nextState;
@@ -131,11 +137,11 @@ export const generatePrediction = (mixRatio, birthDay, drawDate, faithSourcesStr
     const unluckyDigit = unluckyMap[birthDay];
     
     for (let i = 0; i < numFaith; i++) {
-      let fNum = faithPool[Math.floor(Math.random() * faithPool.length)];
+      let fNum = faithPool[Math.floor(rng() * faithPool.length)];
       if (unluckyDigit && fNum.includes(unluckyDigit)) {
         let found = false;
         for (let j = 0; j < 10; j++) {
-          let temp = faithPool[Math.floor(Math.random() * faithPool.length)];
+          let temp = faithPool[Math.floor(rng() * faithPool.length)];
           if (!temp.includes(unluckyDigit)) {
             fNum = temp;
             found = true;
@@ -143,8 +149,8 @@ export const generatePrediction = (mixRatio, birthDay, drawDate, faithSourcesStr
           }
         }
         if (!found) {
-          const is3 = Math.random() < 0.4;
-          fNum = is3 ? Math.floor(Math.random() * 1000).toString().padStart(3, '0') : Math.floor(Math.random() * 100).toString().padStart(2, '0');
+          const is3 = rng() < 0.4;
+          fNum = is3 ? Math.floor(rng() * 1000).toString().padStart(3, '0') : Math.floor(rng() * 100).toString().padStart(2, '0');
         }
       }
       const digitType = fNum.length > 2 ? "3 ตัว" : "2 ตัว";
@@ -156,7 +162,7 @@ export const generatePrediction = (mixRatio, birthDay, drawDate, faithSourcesStr
     }
   }
   
-  detailedResults.sort(() => Math.random() - 0.5);
+  detailedResults.sort(() => rng() - 0.5);
   let explanation = `ระบบประมวลผล ${totalNumbers} ชุดตัวเลข ตามสัดส่วนความเชื่อ ${mixRatio}% ทำให้ได้โควต้า: สายมู ${numFaith} ตัว และ สถิติ ${numMath} ตัว`;
   if (seedNumber) explanation += ` (มีการใช้เลขในใจ '${seedNumber}' ร่วมคำนวณในโมเดล Markov Chain)`;
   
