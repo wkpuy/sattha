@@ -19,7 +19,7 @@ function App() {
   });
 
   return (
-    <div className="app-container" style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+    <div className="app-container" style={{ display: 'flex', flexDirection: 'column', height: '100dvh' }}>
       {/* Header */}
       <header style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -33,8 +33,9 @@ function App() {
       </header>
 
       {/* Main Content Area */}
-      <main style={{ flex: 1, overflowY: 'auto', padding: '0 20px 140px 20px' }}>
-        <div style={{ maxWidth: '480px', margin: '0 auto', height: '100%', position: 'relative' }}>
+      {/* Main Content Area */}
+      <main style={{ flex: 1, overflowY: 'auto' }}>
+        <div style={{ maxWidth: '480px', margin: '0 auto', minHeight: '100%', position: 'relative', padding: '0 20px 140px 20px' }}>
           {activeTab === 'home' && <Home />}
           {activeTab === 'journey' && <Journey />}
           {activeTab === 'dream' && <Dream />}
