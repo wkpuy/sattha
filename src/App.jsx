@@ -33,7 +33,7 @@ function App() {
       </header>
 
       {/* Main Content Area */}
-      <main style={{ flex: 1, overflowY: 'auto', padding: '0 20px 80px 20px' }}>
+      <main style={{ flex: 1, overflowY: 'auto', padding: '0 20px 140px 20px' }}>
         <div style={{ maxWidth: '480px', margin: '0 auto', height: '100%', position: 'relative' }}>
           {activeTab === 'home' && <Home />}
           {activeTab === 'journey' && <Journey />}
@@ -46,9 +46,9 @@ function App() {
       <nav className="glass-panel" style={{ 
         position: 'fixed', bottom: '0', left: '0', right: '0', 
         display: 'flex', justifyContent: 'space-around', 
-        padding: '15px 5px', paddingBottom: '25px',
+        padding: '15px 5px', paddingBottom: 'max(25px, env(safe-area-inset-bottom))',
         borderBottomLeftRadius: '0', borderBottomRightRadius: '0',
-        maxWidth: '480px', margin: '0 auto'
+        maxWidth: '480px', margin: '0 auto', zIndex: 1000
       }}>
         <button onClick={() => setActiveTab('home')} style={getNavBtnStyle('home')}>
           <HomeIcon size={24} />
